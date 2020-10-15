@@ -209,7 +209,6 @@ def read_stars_by_birthyear(year: int, db: Session = Depends(get_db)):
     stars = crud.get_stars_by_birthyear(db=db, year=year)
     return stars
 
-
 @app.get("/stars/count")
 def read_stars_count(db: Session = Depends(get_db)):
     return crud.get_stars_count(db=db)
@@ -229,3 +228,14 @@ def read_stars_by_movie_directed_title(t: str, db: Session = Depends(get_db)):
 @app.get("/stars/stats_movie_by_director", response_model=List[schemas.DirectorStat])
 def read_stats_movies_by_director(minc: Optional[int] = 10, db: Session = Depends(get_db)) -> List[Tuple[schemas.Star, int]]:
     return crud.get_stats_movie_by_director(db=db, min_count=minc)
+
+
+@app.get("/stars/stats_actors/", response_model=List[schemas.StarStat])
+def read_stats_actors(minc: Optional[int] = 5, db: Session = Depends(get_db)):
+    stats = crud.get_stats_actors(db=db, min_count=minc)
+    return stats
+
+@app.get("/stars/stats_by_birthyear/", response_model=List[schemas.StarBirthyearStat])
+def read_stats_stars_by_birthyear(db: Session = Depends(get_db)):
+    stats = crud.get_stats_stars_by_birthyear(db=db)
+    return stats

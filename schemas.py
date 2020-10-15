@@ -75,3 +75,13 @@ class MovieStat(BaseModel):
 class DirectorStat(BaseModel):
     director: Star
     movie_count: int
+
+class StarBirthyearStat(BaseModel):
+    birthyear: int
+    star_count: int
+
+class StarStat(BaseModel):
+    actor: Star
+    movie_count : int
+    first_movie_year: int
+    last_movie_year: int

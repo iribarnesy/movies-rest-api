@@ -148,6 +148,7 @@ def update_movie_director(db: Session, movie_id: int, director_id: int):
     # return updated object
     return db_movie
 
+
 def update_movie_actors(db: Session, movie_id: int, stars_id: List[int]):
     db_movie = get_movie(db=db, movie_id=movie_id)
     if db_movie is None:
@@ -160,6 +161,7 @@ def update_movie_actors(db: Session, movie_id: int, stars_id: List[int]):
         db_movie.actors.append(db_star)
     db.commit()
     return db_movie
+
 
 def add_movie_actor(db: Session, movie_id: int, star_id: int):
     db_movie = get_movie(db=db, movie_id=movie_id)
@@ -263,3 +265,23 @@ def get_star_director_movie_by_title(db: Session, title: str):
     db_movies = db.query(models.Movie).filter(models.Movie.title.like(f'%{title}%')) \
         .join(models.Movie.director)
     return [db_movie.director for db_movie in db_movies]
+
+
+def get_stats_actors(db: Session, min_count: int = 5):
+    query = db.query(models.Star,
+                     func.count(models.Movie.id).label("movie_count"),
+                     func.min(models.Movie.year).label("first_movie_year"),
+                     func.max(models.Movie.year).label("last_movie_year"))
+    query = query.join(models.Movie.actors) \
+        .group_by(models.Star) \
+        .having(func.count(models.Movie.id) >= min_count) \
+        .order_by(desc("movie_count"))
+    return [{"actor": actor, "movie_count": mc, "first_movie_year": miny, "last_movie_year": maxy} for actor, mc, miny, maxy in query]
+
+def get_stats_stars_by_birthyear(db: Session):
+    query = db.query(func.year(models.Star.birthdate),
+                     func.count(models.Movie.id).label("star_count")) \
+        .filter(models.Star.birthdate.isnot(None))
+    query = query.group_by(func.year(models.Star.birthdate)) \
+        .order_by(func.year(models.Star.birthdate))
+    return [{'birthyear': y, 'star_count': sc} for y, sc in query]
