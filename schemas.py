@@ -6,46 +6,72 @@ from datetime import date
 
 from pydantic import BaseModel
 
-# common Base Class for Stars (abstract class)
+
 class StarBase(BaseModel):
+    """
+    common Base Class for Stars (abstract class)
+    """
     name: str
     birthdate: Optional[date]
 
-# item witout id, only for creation purpose
+
 class StarCreate(StarBase):
+    """
+    item witout id, only for creation purpose
+    """
     pass
 
-# item from database with id
+
 class Star(StarBase):
+    """
+    item from database with id
+    """
     id: int
 
     class Config:
         orm_mode = True
 
-# common Base Class for Movies (abstract class)
+
 class MovieBase(BaseModel):
+    """
+    common Base Class for Movies (abstract class)
+    """
     title: str
     year: int
     duration: Optional[int]
 
-# movies witout id, only for creation purpose
+
 class MovieCreate(MovieBase):
+    """
+    movies witout id, only for creation purpose
+    """
     pass
 
-# movies from database with id
+
 class Movie(MovieBase):
+    """
+    movies from database with id
+    """
     id: int
 
     class Config:
         orm_mode = True
 
-# movies from database with director
+
 class MovieDetail(Movie):
+    """
+    movies from database with director
+    """
     director: Optional[Star] = None
     actors: List[Star] = []
-    
-    
-    
-    
-    
-        
+
+class MovieStat(BaseModel):
+    year: int
+    movie_count: int
+    min_duration: Optional[int]
+    max_duration: Optional[int]
+    avg_duration: Optional[float]
+
+class DirectorStat(BaseModel):
+    director: Star
+    movie_count: int
